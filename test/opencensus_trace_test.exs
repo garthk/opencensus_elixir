@@ -1,10 +1,13 @@
-defmodule OpencensusTest do
-  use ExUnit.Case
+defmodule Opencensus.TraceTest do
+  use ExUnit.Case, async: false
 
+  import Opencensus.Attributes
   import Opencensus.TestSupport.SpanCaptureReporter
   import Opencensus.Trace
 
   alias Opencensus.Span
+
+  doctest Opencensus.Attributes
 
   test "verify attributes", _state do
     attach()
@@ -37,7 +40,8 @@ defmodule OpencensusTest do
       :do_something
     end
 
-    assert [%Span{attributes: %{"attr-1" => "value-1", module: OpencensusTest}}] = collect()
+    assert [%Span{attributes: %{"attr-1" => "value-1", "module" => "Opencensus.TraceTest"}}] =
+             collect()
 
     with_child_span "child_span", [%{"attr-1" => "value-1"}, %{"attr-2" => "value-2"}] do
       :do_something
@@ -51,7 +55,8 @@ defmodule OpencensusTest do
       :do_something
     end
 
-    assert [%Span{attributes: %{"attr-1" => "value-1", module: OpencensusTest}}] = collect()
+    assert [%Span{attributes: %{"attr-1" => "value-1", "module" => "Opencensus.TraceTest"}}] =
+             collect()
 
     custom_attrs1 = %{"attr-1" => "value-1"}
     custom_attrs2 = %{"attr-2" => "value-2"}
@@ -72,8 +77,8 @@ defmodule OpencensusTest do
                  "attr" => "value",
                  "attr-1" => "value-1",
                  "attr-2" => "value-2",
-                 line: line,
-                 module: OpencensusTest
+                 "module" => "Opencensus.TraceTest",
+                 "line" => line
                }
              }
            ] = collect()
@@ -87,9 +92,9 @@ defmodule OpencensusTest do
     assert [
              %Span{
                attributes: %{
+                 "function" => "test verify attributes/1",
                  "a" => "b",
-                 "c" => "e",
-                 function: "test verify attributes/1"
+                 "c" => "e"
                }
              }
            ] = collect()
